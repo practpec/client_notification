@@ -1,0 +1,8 @@
+package com.example.client_notification.orderHistory.data.models
+
+data class OrderHistoryResponse(
+    val id: Int,
+    val title: String,
+    val description: String,
+    val creator_id: Int
+)

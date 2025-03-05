@@ -27,13 +27,13 @@ import com.example.client_notification.ui.theme.Yellow
 fun PhoneNumberTextField(
     value: String,
     onValueChange: (String) -> Unit,
+    errorMessage: String? = null,  // Añadido para mostrar mensajes de error
     modifier: Modifier = Modifier
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         TextField(
             value = value,
@@ -43,12 +43,16 @@ fun PhoneNumberTextField(
                 }
             },
             label = { Text("Número de Teléfono") },
-            isError = false,
+            isError = errorMessage != null,  // Si hay error, se activa el estado de error
             modifier = Modifier
                 .height(100.dp)
                 .fillMaxWidth()
                 .padding(14.dp)
-                .border(1.dp, if (isFocused) Yellow else Color.White, shape = MaterialTheme.shapes.small)
+                .border(
+                    1.dp,
+                    if (isFocused) Yellow else Color.White,
+                    shape = MaterialTheme.shapes.small
+                )
                 .focusTarget()
                 .onFocusChanged { focusState -> isFocused = focusState.isFocused },
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -69,5 +73,15 @@ fun PhoneNumberTextField(
             ),
             shape = MaterialTheme.shapes.small
         )
+
+        // Si hay un mensaje de error, lo mostramos debajo del TextField
+        errorMessage?.let {
+            Text(
+                text = it,
+                color = Color.Red,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            )
+        }
     }
 }

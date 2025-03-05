@@ -25,6 +25,7 @@ import com.example.client_notification.ui.theme.Yellow
 fun EmailTextField(
     value: String,
     onValueChange: (String) -> Unit,
+    errorMessage: String? = null,  // Nuevo parámetro para manejar errores
     modifier: Modifier = Modifier
 ) {
     var isFocused by remember { mutableStateOf(false) }
@@ -37,7 +38,7 @@ fun EmailTextField(
             value = value,
             onValueChange = onValueChange,
             label = { Text("Correo Electrónico") },
-            isError = false,
+            isError = errorMessage != null,  // Muestra el error si el mensaje no es nulo
             modifier = Modifier
                 .height(100.dp)
                 .fillMaxWidth()
@@ -60,5 +61,14 @@ fun EmailTextField(
             ),
             shape = MaterialTheme.shapes.small
         )
+        // Mostrar el error debajo del campo si hay un mensaje de error
+        errorMessage?.let {
+            Text(
+                text = it,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            )
+        }
     }
 }

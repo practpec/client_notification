@@ -32,6 +32,7 @@ import com.example.client_notification.ui.theme.Yellow
 fun PasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
+    errorMessage: String? = null,  // Nuevo parámetro para manejar errores
     modifier: Modifier = Modifier
 ) {
     var passwordVisibility by remember { mutableStateOf(false) }
@@ -49,6 +50,7 @@ fun PasswordTextField(
             onValueChange = onValueChange,
             label = { Text("Contraseña") },
             visualTransformation = visualTransformation,
+            isError = errorMessage != null,  // Muestra el error si el mensaje no es nulo
             modifier = Modifier
                 .height(100.dp)
                 .fillMaxWidth()
@@ -80,6 +82,14 @@ fun PasswordTextField(
                 }
             }
         )
+        // Mostrar el error debajo del campo si hay un mensaje de error
+        errorMessage?.let {
+            Text(
+                text = it,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            )
+        }
     }
 }
-
