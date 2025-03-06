@@ -1,4 +1,4 @@
-package com.example.client_notification.shared.components
+package com.example.client_notification.ui.shared
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,12 +24,11 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.client_notification.R
 
 @Composable
-fun LoadingOverlay(message: String) {
+fun EmptyState(message: String) {
 
     val composition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.loading)
+        LottieCompositionSpec.RawRes(R.raw.empty)
     )
-
 
     val progress by animateLottieCompositionAsState(
         composition = composition,
@@ -40,7 +39,7 @@ fun LoadingOverlay(message: String) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.7f)),
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -54,11 +53,12 @@ fun LoadingOverlay(message: String) {
                 modifier = Modifier.size(200.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = message,
                 color = Color.White,
                 style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center // Centrado del texto
+                textAlign = TextAlign.Center // Texto centrado
             )
         }
     }

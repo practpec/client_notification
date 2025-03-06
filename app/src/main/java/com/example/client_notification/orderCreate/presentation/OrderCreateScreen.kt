@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.client_notification.core.storage.TokenManager
 import com.example.client_notification.orderCreate.presentation.componentes.AddressTextField
 import com.example.client_notification.orderCreate.presentation.componentes.CreateButton
@@ -50,15 +51,25 @@ fun OrderCreateScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                IconButton(
-                    onClick = onNavigateBack,
-                    modifier = Modifier.align(Alignment.Start)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Regresar"
+                    IconButton(
+                        onClick = onNavigateBack
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Regresar"
+                        )
+                    }
+                    Text(
+                        text = "Regresar",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(start = 8.dp)
                     )
                 }
 

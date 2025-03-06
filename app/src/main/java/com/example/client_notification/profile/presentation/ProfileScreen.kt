@@ -12,12 +12,12 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.client_notification.profile.data.models.ProfileDto
+import com.example.client_notification.ui.shared.CustomButton
 
 @Composable
 fun ProfileScreen(
@@ -26,7 +26,6 @@ fun ProfileScreen(
 ) {
     val uiState by viewModel.uiState.observeAsState(ProfileViewModel.UiState.Initial)
 
-    // Cargar datos del perfil al iniciar la pantalla
     LaunchedEffect(key1 = true) {
         viewModel.loadUserProfile()
     }
@@ -36,7 +35,6 @@ fun ProfileScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Contenido principal del perfil
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -109,6 +107,7 @@ fun ProfileScreen(
                         Button(onClick = { viewModel.loadUserProfile() }) {
                             Text("Reintentar")
                         }
+
                     }
                 }
                 else -> { /* Estado inicial, no hacer nada */ }
@@ -162,21 +161,10 @@ fun UserProfileInfo(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        Button(
-            onClick = onLogout,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error
-            ),
-            modifier = Modifier.fillMaxWidth(0.8f)
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Logout,
-                contentDescription = "Logout",
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Cerrar sesión")
-        }
+        CustomButton(
+            text = "Cerrar sesión",
+            onClick = { onLogout() }
+        )
     }
 }
 

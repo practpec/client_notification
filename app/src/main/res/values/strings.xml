@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Client_notification</string>
+    <string name="app_name">Gofer Client</string>
     <string name="default_notification_channel_id">default_channel</string>
 </resources>

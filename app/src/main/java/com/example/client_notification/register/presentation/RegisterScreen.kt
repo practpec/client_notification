@@ -39,7 +39,8 @@ fun RegisterScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .padding(top=10.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -47,67 +48,52 @@ fun RegisterScreen(
             Text(
                 text = "Registro",
                 style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier.padding(bottom = 24.dp)
+                modifier = Modifier.padding(bottom = 10.dp)
             )
 
-            // Campo de email
             NameTextField(
                 value = name,
                 onValueChange = { viewModel.onNameChanged(it) },
                 errorMessage = nameError
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Campo de email
             EmailTextField(
                 value = email,
                 onValueChange = { viewModel.onEmailChanged(it) },
                 errorMessage = emailError
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Campo de contraseña
             PasswordTextField(
                 value = password,
                 onValueChange = { viewModel.onPasswordChanged(it) },
                 errorMessage = passwordError
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Campo de teléfono
             PhoneNumberTextField(
                 value = phoneNumber,
                 onValueChange = { viewModel.onPhoneNumberChanged(it) },
                 errorMessage = phoneNumberError
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Botón de registro
             CustomButton(
                 text = "Registrar",
                 onClick = { viewModel.onRegisterClick() }
             )
 
-            // Texto para redirigir al login
             Text(
                 text = "¿Ya tienes una cuenta? Inicia sesión aquí",
                 color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .clickable { onNavigateToLogin() }
-                    .padding(top = 16.dp)
+                    .padding(top = 1.dp)
             )
         }
-
-        // Lógica para manejar el estado de la UI (como éxito o error)
         LaunchedEffect(viewModel.uiState.value) {
             when (val uiState = viewModel.uiState.value) {
                 is RegisterViewModel.UiState.Success -> {
                     snackbarHostState.showSnackbar("Usuario registrado exitosamente")
+                    onNavigateToLogin()
                 }
                 is RegisterViewModel.UiState.Error -> {
                     snackbarHostState.showSnackbar(uiState.message)

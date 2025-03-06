@@ -42,7 +42,7 @@ fun EmailTextField(
             modifier = Modifier
                 .height(100.dp)
                 .fillMaxWidth()
-                .padding(14.dp)
+                .padding(20.dp)
                 .border(1.dp, if (isFocused) Yellow else Color.White, shape = MaterialTheme.shapes.small)
                 .focusTarget()
                 .onFocusChanged { focusState -> isFocused = focusState.isFocused },
@@ -67,7 +67,7 @@ fun EmailTextField(
                 text = it,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                modifier = Modifier.padding(start = 10.dp, top = 4.dp)
             )
         }
     }

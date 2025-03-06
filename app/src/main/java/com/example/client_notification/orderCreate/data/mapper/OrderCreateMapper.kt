@@ -7,8 +7,12 @@ object OrderCreateMapper {
 
     fun mapToDto(response: OrderResponse): OrderCreateDto {
         return OrderCreateDto(
-            notes = response.notes,
-            address = response.address
+            id = response.order._id,
+            notes = response.order.notes,
+            address = response.order.address,
+            status = response.order.status,
+            createdAt = response.order.created_at
         )
     }
 }
+

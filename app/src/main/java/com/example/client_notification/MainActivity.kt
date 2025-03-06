@@ -9,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.client_notification.core.navigation.NavGraph
-import com.example.client_notification.orderCreate.presentation.OrderCreateScreen
 import com.example.client_notification.ui.theme.Client_notificationTheme
 
 
@@ -25,7 +24,6 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
                     NavGraph(navController = navController)
-                // OrderCreateScreen()
                 }
             }
         }

@@ -9,10 +9,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.client_notification.home.presentation.components.RecentOrderCard
+import com.example.client_notification.ui.shared.EmptyState
+import com.example.client_notification.ui.shared.RecentOrderCard
 import com.example.client_notification.shared.data.models.OrdersDto
-import com.example.client_notification.ui.shared.CustomButton
-
 @Composable
 fun OrderHistoryScreen(
     viewModel: OrderHistoryViewModel,
@@ -21,9 +20,10 @@ fun OrderHistoryScreen(
     var selectedOrder by remember { mutableStateOf<OrdersDto?>(null) }
     var showModal by remember { mutableStateOf(false) }
 
-    // Cargar órdenes al iniciar la pantalla
-    LaunchedEffect(key1 = true) {
-        viewModel.loadOrders()
+    LaunchedEffect(uiState) {
+        if (uiState is OrderHistoryViewModel.UiState.Initial || uiState is OrderHistoryViewModel.UiState.Error) {
+            viewModel.loadOrders()
+        }
     }
 
     Column(
@@ -32,7 +32,7 @@ fun OrderHistoryScreen(
             .padding(16.dp)
     ) {
         Text(
-            text = "Pedidos recientes",
+            text = "Historial de Pedidos",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(vertical = 16.dp)
         )
@@ -48,17 +48,23 @@ fun OrderHistoryScreen(
             }
             is OrderHistoryViewModel.UiState.Success -> {
                 val orders = (uiState as OrderHistoryViewModel.UiState.Success).orders
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(orders) { order ->
-                        RecentOrderCard(
-                            order = order,
-                            onClick = {
-                                selectedOrder = order
-                                showModal = true
-                            }
-                        )
+                if (orders.isEmpty()) {
+                    // Si no hay órdenes, mostramos el estado vacío
+                    EmptyState(message = "No se encontraron pedidos")
+                } else {
+                    // Si hay órdenes, mostramos la lista
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(orders) { order ->
+                            RecentOrderCard(
+                                order = order,
+                                onClick = {
+                                    selectedOrder = order
+                                    showModal = true
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -83,7 +89,7 @@ fun OrderHistoryScreen(
                     }
                 }
             }
-            else -> { /* Estado inicial, no hacer nada */ }
+            else -> {}
         }
     }
 
@@ -93,7 +99,6 @@ fun OrderHistoryScreen(
             title = { Text("Detalles del pedido") },
             text = {
                 Column {
-                    Text("ID: ${selectedOrder?.id}")
                     Text("Cliente: ${selectedOrder?.userName}")
                     Text("Email: ${selectedOrder?.userEmail}")
                     Text("Teléfono: ${selectedOrder?.userPhone}")

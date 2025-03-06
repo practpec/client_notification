@@ -29,10 +29,10 @@ class OrderCreateRepository(private val tokenManager: TokenManager) {
         val errors: List<String>? = null
     )
 
-    suspend fun createOrder(title: String, description: String): Result<OrderCreateDto> {
+    suspend fun createOrder(notes: String, address: String): Result<OrderCreateDto> {
         return withContext(Dispatchers.IO) {
             try {
-                val request = CreateOrderRequest(title, description)
+                val request = CreateOrderRequest(notes, address)
                 val response = orderApi.createOrder(request)
                 handleApiResponse<OrderResponse, OrderCreateDto>(response) { orderResponse ->
                     OrderCreateMapper.mapToDto(orderResponse)
@@ -83,3 +83,4 @@ class OrderCreateRepository(private val tokenManager: TokenManager) {
         }
     }
 }
+

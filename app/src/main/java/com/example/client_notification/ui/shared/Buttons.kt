@@ -30,7 +30,7 @@ fun CustomButton(
         modifier = modifier
             .fillMaxWidth()
             .height(100.dp)
-            .padding(14.dp),
+            .padding(20.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
         Text(

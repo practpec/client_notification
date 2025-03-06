@@ -112,7 +112,7 @@ class LoginViewModel(
             try {
                 _uiState.value = UiState.Loading
 
-                delay(1500) // Delay de 1.5 segundos
+                delay(500) // Delay de 1.5 segundos
 
                 val email = _email.value ?: ""
                 val password = _password.value ?: ""

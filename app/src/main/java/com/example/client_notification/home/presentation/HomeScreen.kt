@@ -9,7 +9,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.client_notification.home.presentation.components.RecentOrderCard
+import com.example.client_notification.ui.shared.EmptyState // Asegúrate de importar el componente EmptyState
+import com.example.client_notification.ui.shared.RecentOrderCard
 import com.example.client_notification.shared.data.models.OrdersDto
 import com.example.client_notification.ui.shared.CustomButton
 
@@ -22,7 +23,6 @@ fun HomeScreen(
     var selectedOrder by remember { mutableStateOf<OrdersDto?>(null) }
     var showModal by remember { mutableStateOf(false) }
 
-    // Cargar órdenes al iniciar la pantalla
     LaunchedEffect(key1 = true) {
         viewModel.loadOrders()
     }
@@ -30,7 +30,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         CustomButton(
             modifier = Modifier.padding(top = 16.dp),
@@ -39,15 +39,17 @@ fun HomeScreen(
         )
 
         Text(
-            text = "Pedidos recientes",
+            text = "Pedidos Pendientes",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(vertical = 16.dp)
+                .padding(16.dp)
         )
 
         when (uiState) {
             is HomeViewModel.UiState.Loading -> {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize()
+                        .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
@@ -55,17 +57,22 @@ fun HomeScreen(
             }
             is HomeViewModel.UiState.Success -> {
                 val orders = (uiState as HomeViewModel.UiState.Success).orders
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(orders) { order ->
-                        RecentOrderCard(
-                            order = order,
-                            onClick = {
-                                selectedOrder = order
-                                showModal = true
-                            }
-                        )
+                if (orders.isEmpty()) {
+
+                    EmptyState(message = "Sin pedidos pendientes")
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(orders) { order ->
+                            RecentOrderCard(
+                                order = order,
+                                onClick = {
+                                    selectedOrder = order
+                                    showModal = true
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -100,7 +107,6 @@ fun HomeScreen(
             title = { Text("Detalles del pedido") },
             text = {
                 Column {
-                    Text("ID: ${selectedOrder?.id}")
                     Text("Cliente: ${selectedOrder?.userName}")
                     Text("Email: ${selectedOrder?.userEmail}")
                     Text("Teléfono: ${selectedOrder?.userPhone}")
@@ -120,4 +126,3 @@ fun HomeScreen(
         )
     }
 }
-

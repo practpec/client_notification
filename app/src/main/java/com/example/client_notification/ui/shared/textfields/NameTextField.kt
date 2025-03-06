@@ -42,7 +42,7 @@ fun NameTextField(
             modifier = Modifier
                 .height(100.dp)
                 .fillMaxWidth()
-                .padding(14.dp)
+                .padding(20.dp)
                 .border(1.dp, if (isFocused) Yellow else Color.White, shape = MaterialTheme.shapes.small)
                 .focusTarget()
                 .onFocusChanged { focusState -> isFocused = focusState.isFocused },
