@@ -16,11 +16,9 @@ fun NavGraphBuilder.loginRoute(
     navController: NavHostController
 ) {
     composable(route = Destinations.Login.route) {
-        // Obtenemos el contexto y lo convertimos a Application
         val context = LocalContext.current
         val application = remember(context) { context.applicationContext as Application }
 
-        // Creamos el ViewModel con la factory actualizada
         val loginViewModel: LoginViewModel = viewModel(
             factory = LoginViewModelFactory(application)
         )
@@ -30,12 +28,10 @@ fun NavGraphBuilder.loginRoute(
                 navController.navigate(Destinations.Register.route)
             },
             onLoginSuccess = {
-                // Descomentamos y actualizamos la navegación después del login exitoso
-//                navController.navigate(Destinations.TaskList.route) {
-//                    // Eliminamos la pantalla de login del back stack para que
-//                    // el usuario no pueda volver atrás después de iniciar sesión
-//                    popUpTo(Destinations.Login.route) { inclusive = true }
-//                }
+
+                navController.navigate(Destinations.Home.route) {
+                    popUpTo(Destinations.Login.route) { inclusive = true }
+                }
             },
             viewModel = loginViewModel
         )

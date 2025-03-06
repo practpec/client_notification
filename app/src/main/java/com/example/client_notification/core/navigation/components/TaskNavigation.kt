@@ -17,8 +17,9 @@ fun TaskNavigation(navController: NavHostController) {
         val currentRoute = navBackStackEntry?.destination?.route
 
         val items = listOf(
-            BottomNavItem.Create,
-            BottomNavItem.List
+            BottomNavItem.Home,
+            BottomNavItem.OrderHistory,
+            BottomNavItem.Profile
         )
 
         items.forEach { item ->

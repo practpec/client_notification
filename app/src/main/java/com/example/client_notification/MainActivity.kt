@@ -23,9 +23,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-//                    val navController = rememberNavController()
-//                    NavGraph(navController = navController)
-                    OrderCreateScreen()
+                    val navController = rememberNavController()
+                    NavGraph(navController = navController)
+                // OrderCreateScreen()
                 }
             }
         }

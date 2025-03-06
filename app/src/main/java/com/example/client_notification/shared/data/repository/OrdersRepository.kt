@@ -1,18 +1,18 @@
-package com.example.client_notification.orderCreate.data.repository
+package com.example.client_notification.shared.data.repository
 
+import android.util.Log
 import com.example.client_notification.core.network.retrofit.RetrofitApis
 import com.example.client_notification.core.storage.TokenManager
-import com.example.client_notification.orderCreate.data.mapper.OrderCreateMapper
-import com.example.client_notification.orderCreate.data.models.CreateOrderRequest
-import com.example.client_notification.orderCreate.data.models.OrderCreateDto
-import com.example.client_notification.orderCreate.data.models.OrderResponse
+import com.example.client_notification.shared.data.mapper.OrdersMapper
+import com.example.client_notification.shared.data.models.ApiResponse
+import com.example.client_notification.shared.data.models.OrdersDto
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class OrderCreateRepository(private val tokenManager: TokenManager) {
-    private val orderApi = RetrofitApis.getOrderApi(tokenManager)
+class OrdersRepository(private val tokenManager: TokenManager) {
+    private val ordersApi = RetrofitApis.getOrdersApi(tokenManager)
     private val gson = Gson()
 
     sealed class Result<out T> {
@@ -29,13 +29,27 @@ class OrderCreateRepository(private val tokenManager: TokenManager) {
         val errors: List<String>? = null
     )
 
-    suspend fun createOrder(title: String, description: String): Result<OrderCreateDto> {
+    suspend fun getOrders(): Result<List<OrdersDto>> {
         return withContext(Dispatchers.IO) {
             try {
-                val request = CreateOrderRequest(title, description)
-                val response = orderApi.createOrder(request)
-                handleApiResponse<OrderResponse, OrderCreateDto>(response) { orderResponse ->
-                    OrderCreateMapper.mapToDto(orderResponse)
+                val response = ordersApi.getOrders()
+                handleApiResponse(response) { apiResponse ->
+                    apiResponse.orders.map { OrdersMapper.mapToDto(it) }
+                }
+            } catch (e: Exception) {
+                Result.Error.NetworkError("Error de red: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getPendingOrders(): Result<List<OrdersDto>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = ordersApi.getOrders()
+                handleApiResponse(response) { apiResponse ->
+                    apiResponse.orders
+                        .filter { it.status == "pending" }
+                        .map { OrdersMapper.mapToDto(it) }
                 }
             } catch (e: Exception) {
                 Result.Error.NetworkError("Error de red: ${e.message}")
@@ -53,6 +67,14 @@ class OrderCreateRepository(private val tokenManager: TokenManager) {
                     Result.Success(transform(it))
                 } ?: Result.Error.ServerError(500, "Respuesta vacía del servidor")
             }
+            307 -> {
+                val newUrl = response.headers()["Location"]
+                if (newUrl != null) {
+                    Result.Error.NetworkError("Recurso movido temporalmente a: $newUrl")
+                } else {
+                    Result.Error.ServerError(307, "Redirección sin ubicación proporcionada")
+                }
+            }
             400 -> {
                 try {
                     val errorBody = response.errorBody()?.string()
@@ -62,10 +84,7 @@ class OrderCreateRepository(private val tokenManager: TokenManager) {
                         errors = errorResponse.errors
                     )
                 } catch (e: Exception) {
-                    Result.Error.BadRequest(
-                        message = "Error en la solicitud",
-                        errors = null
-                    )
+                    Result.Error.BadRequest("Error en la solicitud")
                 }
             }
             in 401..499 -> {
@@ -83,3 +102,4 @@ class OrderCreateRepository(private val tokenManager: TokenManager) {
         }
     }
 }
+

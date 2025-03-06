@@ -1,18 +1,17 @@
-package com.example.client_notification.orderCreate.data.repository
+package com.example.client_notification.profile.data.repository
 
 import com.example.client_notification.core.network.retrofit.RetrofitApis
 import com.example.client_notification.core.storage.TokenManager
-import com.example.client_notification.orderCreate.data.mapper.OrderCreateMapper
-import com.example.client_notification.orderCreate.data.models.CreateOrderRequest
-import com.example.client_notification.orderCreate.data.models.OrderCreateDto
-import com.example.client_notification.orderCreate.data.models.OrderResponse
+import com.example.client_notification.profile.data.mapper.ProfileMapper
+import com.example.client_notification.profile.data.models.ProfileDto
+import com.example.client_notification.profile.data.models.ProfileResponse
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class OrderCreateRepository(private val tokenManager: TokenManager) {
-    private val orderApi = RetrofitApis.getOrderApi(tokenManager)
+class ProfileRepository(private val tokenManager: TokenManager) {
+    private val profileApi = RetrofitApis.getProfileApi(tokenManager)
     private val gson = Gson()
 
     sealed class Result<out T> {
@@ -29,13 +28,12 @@ class OrderCreateRepository(private val tokenManager: TokenManager) {
         val errors: List<String>? = null
     )
 
-    suspend fun createOrder(title: String, description: String): Result<OrderCreateDto> {
+    suspend fun getUserProfile(): Result<ProfileDto> {
         return withContext(Dispatchers.IO) {
             try {
-                val request = CreateOrderRequest(title, description)
-                val response = orderApi.createOrder(request)
-                handleApiResponse<OrderResponse, OrderCreateDto>(response) { orderResponse ->
-                    OrderCreateMapper.mapToDto(orderResponse)
+                val response = profileApi.getUserProfile()
+                handleApiResponse<ProfileResponse, ProfileDto>(response) { profileResponse ->
+                    ProfileMapper.mapToDto(profileResponse.user)
                 }
             } catch (e: Exception) {
                 Result.Error.NetworkError("Error de red: ${e.message}")
@@ -53,6 +51,14 @@ class OrderCreateRepository(private val tokenManager: TokenManager) {
                     Result.Success(transform(it))
                 } ?: Result.Error.ServerError(500, "Respuesta vacía del servidor")
             }
+            307 -> {
+                val newUrl = response.headers()["Location"]
+                if (newUrl != null) {
+                    Result.Error.NetworkError("Recurso movido temporalmente a: $newUrl")
+                } else {
+                    Result.Error.ServerError(307, "Redirección sin ubicación proporcionada")
+                }
+            }
             400 -> {
                 try {
                     val errorBody = response.errorBody()?.string()
@@ -62,10 +68,7 @@ class OrderCreateRepository(private val tokenManager: TokenManager) {
                         errors = errorResponse.errors
                     )
                 } catch (e: Exception) {
-                    Result.Error.BadRequest(
-                        message = "Error en la solicitud",
-                        errors = null
-                    )
+                    Result.Error.BadRequest("Error en la solicitud")
                 }
             }
             in 401..499 -> {
@@ -83,3 +86,4 @@ class OrderCreateRepository(private val tokenManager: TokenManager) {
         }
     }
 }
+

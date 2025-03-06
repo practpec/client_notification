@@ -1,24 +1,23 @@
 package com.example.client_notification.core.navigation.routes
 
+
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.client_notification.core.navigation.destinations.Destinations
-import com.example.client_notification.orderCreate.presentation.OrderCreateScreen
-import com.example.client_notification.orderCreate.presentation.OrderCreateViewModelFactory
+import com.example.client_notification.orderHistory.presentation.OrderHistoryScreen
+import com.example.client_notification.orderHistory.presentation.OrderHistoryViewModelFactory
 
-fun NavGraphBuilder.createOrderRoute(
+fun NavGraphBuilder.orderHistoryRoute(
     navController: NavHostController
 ) {
-    composable(route = Destinations.CreateOrder.route) {
-        OrderCreateScreen(
+    composable(route = Destinations.OrderHistory.route) {
+        OrderHistoryScreen(
             viewModel = viewModel(
-                factory = OrderCreateViewModelFactory(LocalContext.current)
-            ),
-            onNavigateBack = { navController.popBackStack() },
-
+                factory = OrderHistoryViewModelFactory(LocalContext.current)
+            )
         )
     }
 }

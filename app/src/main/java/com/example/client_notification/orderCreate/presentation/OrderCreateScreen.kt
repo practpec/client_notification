@@ -1,32 +1,99 @@
 package com.example.client_notification.orderCreate.presentation
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.client_notification.core.storage.TokenManager
+import com.example.client_notification.orderCreate.presentation.componentes.AddressTextField
+import com.example.client_notification.orderCreate.presentation.componentes.CreateButton
 import com.example.client_notification.orderCreate.presentation.componentes.NoteItem
-import com.example.client_notification.ui.shared.CustomButton
 
 @Composable
-fun OrderCreateScreen() {
-    var orderText by remember { mutableStateOf(TextFieldValue("")) }
+fun OrderCreateScreen(
+    viewModel: OrderCreateViewModel,
+    onNavigateBack: () -> Unit = {}
+) {
+    val notes by viewModel.notes.observeAsState("")
+    val address by viewModel.address.observeAsState("")
+    val uiState by viewModel.uiState.observeAsState(OrderCreateViewModel.UiState.Initial)
+    val notesError by viewModel.notesError.observeAsState(null)
+    val addressError by viewModel.addressError.observeAsState(null)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        NoteItem(
-            value = orderText,
-            onValueChange = { orderText = it }
-        )
+    val tokenManager = TokenManager(LocalContext.current)
+    val currentToken = remember { tokenManager.getToken() }
+    val snackbarHostState = remember { SnackbarHostState() }
 
+    LaunchedEffect(Unit) {
+        if (currentToken.isNullOrEmpty()) {
+            snackbarHostState.showSnackbar("No hay token de autenticación")
+            onNavigateBack()
+        }
+    }
 
-        CustomButton(
-            modifier = Modifier.padding(top = 16.dp),
-            text = "Ordenar",
-            onClick = { /* Acción al presionar el botón */ }
-        )
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                IconButton(
+                    onClick = onNavigateBack,
+                    modifier = Modifier.align(Alignment.Start)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Regresar"
+                    )
+                }
+
+                NoteItem(
+                    value = notes,
+                    onValueChange = { viewModel.onNotesChanged(it) },
+                    errorMessage = notesError
+                )
+
+                AddressTextField(
+                    value = address,
+                    onValueChange = { viewModel.onAddressChanged(it) },
+                    errorMessage = addressError
+                )
+
+                CreateButton(
+                    modifier = Modifier,
+                    text = "Ordenar",
+                    enabled = true,//uiState !is OrderCreateViewModel.UiState.Loading,
+                    onClick = { viewModel.onCreateOrderClick() }
+                )
+            }
+        }
+    }
+
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is OrderCreateViewModel.UiState.Success -> {
+                snackbarHostState.showSnackbar("Orden creada exitosamente")
+                onNavigateBack()
+            }
+            is OrderCreateViewModel.UiState.Error -> {
+                snackbarHostState.showSnackbar((uiState as OrderCreateViewModel.UiState.Error).message)
+            }
+            else -> {}
+        }
     }
 }

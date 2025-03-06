@@ -7,6 +7,6 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface OrderApiCreate {
-    @POST("orders/")
+    @POST("api/orders/")
     suspend fun createOrder(@Body request: CreateOrderRequest): Response<OrderResponse>
 }

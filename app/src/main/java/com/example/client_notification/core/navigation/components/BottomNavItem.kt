@@ -1,11 +1,13 @@
 package com.example.client_notification.core.navigation.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val title: String) {
-    object Create : BottomNavItem("create_order", Icons.Default.Add, "Crear")
-    object List : BottomNavItem("order_list", Icons.Default.List, "Lista")
+    object Home : BottomNavItem("home", Icons.Default.Home, "Home")
+    object OrderHistory : BottomNavItem("order_history", Icons.Default.History, "Historial")
+    object Profile : BottomNavItem("profile", Icons.Default.Person, "Perfil")
 }

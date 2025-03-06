@@ -1,4 +1,4 @@
-package com.example.client_notification.orderHistory.presentation
+package com.example.client_notification.home.presentation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,7 +8,7 @@ import com.example.client_notification.shared.data.repository.OrdersRepository
 import com.example.client_notification.shared.data.models.OrdersDto
 import kotlinx.coroutines.launch
 
-class OrderHistoryViewModel(
+class HomeViewModel(
     private val homeRepository: OrdersRepository
 ) : ViewModel() {
 
@@ -27,7 +27,7 @@ class OrderHistoryViewModel(
             try {
                 _uiState.value = UiState.Loading
 
-                when (val result = homeRepository.getOrders()) {
+                when (val result = homeRepository.getPendingOrders()) {
                     is OrdersRepository.Result.Success -> {
                         _uiState.value = UiState.Success(result.data)
                     }

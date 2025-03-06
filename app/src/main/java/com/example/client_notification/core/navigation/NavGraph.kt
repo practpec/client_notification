@@ -16,14 +16,19 @@ fun NavGraph(
     navController: NavHostController,
     startDestination: String = Destinations.Login.route
 ) {
+    // Obtener la ruta actual para determinar si mostrar la barra de navegación
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+    val showBottomBar = currentRoute in listOf(
+        Destinations.Home.route,
+        Destinations.OrderHistory.route,
+        Destinations.Profile.route
+    )
+
     Scaffold(
         bottomBar = {
-//            if (navController.currentBackStackEntryAsState().value?.destination?.route in listOf(
-//                    //Destinations.CreateTask.route,
-//                    //Destinations.TaskList.route
-//                )) {
-//                TaskNavigation(navController)
-//            }
+            if (showBottomBar) {
+                TaskNavigation(navController)
+            }
         }
     ) { paddingValues ->
         NavHost(
@@ -33,8 +38,11 @@ fun NavGraph(
         ) {
             loginRoute(navController)
             registerRoute(navController)
-            //createTaskRoute(navController)
-            //taskListRoute(navController)
+            homeRoute(navController)
+            createOrderRoute(navController)
+            orderHistoryRoute(navController)
+            profileRoute(navController)
         }
     }
 }
+

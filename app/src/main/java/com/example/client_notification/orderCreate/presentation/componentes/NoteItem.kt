@@ -23,8 +23,9 @@ fun NoteItem(
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 10.dp,
     cutCornerSize: Dp = 30.dp,
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit
+    value: String,
+    onValueChange: (String) -> Unit,
+    errorMessage: String? = null
 ) {
     val backgroundColor = MaterialTheme.colorScheme.primary
     val darkenedColor = Color(
@@ -33,7 +34,6 @@ fun NoteItem(
 
     Box(
         modifier = modifier
-            .padding(top = 60.dp)
             .height(300.dp)
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
@@ -86,6 +86,16 @@ fun NoteItem(
                     cursorColor = Color.White
                 ),
             )
+            // Mostrar error si existe
+            if (!errorMessage.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = errorMessage,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
     }
 }
+

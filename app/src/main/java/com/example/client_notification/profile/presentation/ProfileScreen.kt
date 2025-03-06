@@ -7,18 +7,29 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.client_notification.profile.data.models.ProfileDto
 
 @Composable
-fun ProfileScreen() {
-    val darkBlue = Color(0xFF0A2240)
+fun ProfileScreen(
+    viewModel: ProfileViewModel,
+    onLogout: () -> Unit = {}
+) {
+    val uiState by viewModel.uiState.observeAsState(ProfileViewModel.UiState.Initial)
+
+    // Cargar datos del perfil al iniciar la pantalla
+    LaunchedEffect(key1 = true) {
+        viewModel.loadUserProfile()
+    }
 
     Box(
         modifier = Modifier
@@ -39,12 +50,9 @@ fun ProfileScreen() {
                     .padding(vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
-                Spacer(modifier = Modifier.weight(1f))
-
                 Text(
                     text = "Perfil",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -62,76 +70,152 @@ fun ProfileScreen() {
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
                     .padding(2.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Person, // Reemplaza con tu imagen
+                    imageVector = Icons.Filled.Person,
                     contentDescription = "Profile Picture",
                     modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape),
-
+                        .size(60.dp),
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            MenuItems()
+            when (uiState) {
+                is ProfileViewModel.UiState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+                is ProfileViewModel.UiState.Success -> {
+                    val user = (uiState as ProfileViewModel.UiState.Success).user
+                    UserProfileInfo(user = user, onLogout = onLogout)
+                }
+                is ProfileViewModel.UiState.Error -> {
+                    val error = (uiState as ProfileViewModel.UiState.Error)
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Error: ${error.message}",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(onClick = { viewModel.loadUserProfile() }) {
+                            Text("Reintentar")
+                        }
+                    }
+                }
+                else -> { /* Estado inicial, no hacer nada */ }
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
                 text = "App Version 1.0",
-                color = Color.White.copy(alpha = 0.7f),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                 fontSize = 12.sp,
                 modifier = Modifier.padding(bottom = 70.dp)
             )
         }
-
     }
 }
 
 @Composable
-fun MenuItems() {
-    val menuItems = listOf(
-        MenuItem("Correo Electronico", Icons.Outlined.Mail),
-        MenuItem("Numero de telefono", Icons.Outlined.Phone),
-        MenuItem("Logout", Icons.Outlined.Logout)
-    )
-
+fun UserProfileInfo(
+    user: ProfileDto,
+    onLogout: () -> Unit
+) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(40.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        menuItems.forEach { item ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = item.icon,
-                    contentDescription = item.title,
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = item.title,
-                    color = Color.White,
-                    fontSize = 16.sp
-                )
-            }
+        Text(
+            text = user.name,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        ProfileMenuItem(
+            icon = Icons.Outlined.Mail,
+            title = "Correo Electrónico",
+            value = user.email
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        ProfileMenuItem(
+            icon = Icons.Outlined.Phone,
+            title = "Número de teléfono",
+            value = user.phone
+        )
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Button(
+            onClick = onLogout,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error
+            ),
+            modifier = Modifier.fillMaxWidth(0.8f)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Logout,
+                contentDescription = "Logout",
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Cerrar sesión")
         }
     }
 }
 
+@Composable
+fun ProfileMenuItem(
+    icon: ImageVector,
+    title: String,
+    value: String
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 4.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = title,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                fontSize = 14.sp
+            )
+        }
 
+        Text(
+            text = value,
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(start = 28.dp)
+        )
+    }
+}
 
-data class MenuItem(
-    val title: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector
-)

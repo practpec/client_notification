@@ -1,47 +1,58 @@
 package com.example.client_notification.home.presentation.components
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import com.example.client_notification.shared.data.models.OrdersDto
 
 @Composable
-fun RecentOrderCard(date: String, receiver: String, isSelected: Boolean, onClick: () -> Unit) {
-    Box(
+fun RecentOrderCard(
+    order: OrdersDto,
+    onClick: () -> Unit
+) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp)
+            .padding(vertical = 8.dp)
+            .clickable(onClick = onClick)
     ) {
-        Box(
+        Column(
             modifier = Modifier
-                .clip(RoundedCornerShape(12.dp)) // Aplica el redondeo primero
-                .border(2.dp, if (isSelected) Color.Yellow else Color.White, RoundedCornerShape(12.dp)) // Luego el borde redondeado
-                .pointerInput(Unit) {
-                    detectTapGestures(onTap = { onClick() })
-                }
+                .padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-            ) {
+            Text(
+                text = "ID: ${order.id}",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Estado: ${order.status}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Fecha: ${order.date}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Cliente: ${order.userName}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Text(
+                text = "Dirección: ${order.address}",
+                style = MaterialTheme.typography.bodySmall
+            )
+            if (order.notes.isNotEmpty()) {
                 Text(
-                    text = "Fecha: $date",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                Text(
-                    text = "Recibido por: $receiver",
-                    style = MaterialTheme.typography.bodyMedium
+                    text = "Notas: ${order.notes}",
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }
     }
 }
+
