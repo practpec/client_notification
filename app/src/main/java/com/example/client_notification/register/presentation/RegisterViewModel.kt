@@ -11,6 +11,9 @@ import com.example.client_notification.register.data.model.CreateUserRequest
 import com.example.client_notification.register.data.repository.RegisterRepository
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -28,8 +31,9 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
         data class Error(val message: String, val errors: List<String>? = null) : UiState()
     }
 
-    private val _uiState = MutableLiveData<UiState>(UiState.Initial)
-    val uiState: LiveData<UiState> = _uiState
+    private val _uiState = MutableStateFlow<UiState>(UiState.Initial)
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
 
     private val _email = MutableLiveData("")
     val email: LiveData<String> = _email

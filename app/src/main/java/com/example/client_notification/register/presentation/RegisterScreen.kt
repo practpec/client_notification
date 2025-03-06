@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.client_notification.ui.shared.CustomButton
 import com.example.client_notification.ui.shared.textfields.EmailTextField
 import com.example.client_notification.ui.shared.textfields.NameTextField
@@ -27,6 +28,8 @@ fun RegisterScreen(
     val emailError by viewModel.emailError.observeAsState(null)
     val passwordError by viewModel.passwordError.observeAsState(null)
     val phoneNumberError by viewModel.phoneNumberError.observeAsState(null)
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
 
     // Estado del snackbar
     val snackbarHostState = remember { SnackbarHostState() }
@@ -89,17 +92,18 @@ fun RegisterScreen(
                     .padding(top = 1.dp)
             )
         }
-        LaunchedEffect(viewModel.uiState.value) {
-            when (val uiState = viewModel.uiState.value) {
+        LaunchedEffect(uiState) {
+            when (uiState) {
                 is RegisterViewModel.UiState.Success -> {
-                    snackbarHostState.showSnackbar("Usuario registrado exitosamente")
                     onNavigateToLogin()
                 }
                 is RegisterViewModel.UiState.Error -> {
-                    snackbarHostState.showSnackbar(uiState.message)
+                    val errorMessage = (uiState as RegisterViewModel.UiState.Error).message
+                    snackbarHostState.showSnackbar(errorMessage)
                 }
-                else -> {}
+                else -> Unit
             }
         }
+
     }
 }
