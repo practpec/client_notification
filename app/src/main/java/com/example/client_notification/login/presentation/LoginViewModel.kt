@@ -136,7 +136,6 @@ class LoginViewModel(
                 }
 
                 try {
-                    // Obtenemos el token o lanzamos una excepción si hay error
                     fcmToken = getFCMToken()
                 } catch (e: Exception) {
                     _uiState.value = UiState.Error(
@@ -146,7 +145,6 @@ class LoginViewModel(
                     return@launch
                 }
 
-                // Verificar que tenemos un token válido
                 if (fcmToken.isNullOrEmpty()) {
                     _uiState.value = UiState.Error(
                         message = "No se pudo obtener el token de notificaciones",

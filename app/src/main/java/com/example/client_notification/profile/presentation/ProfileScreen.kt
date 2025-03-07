@@ -41,7 +41,7 @@ fun ProfileScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Cabecera con botón de retroceso y título
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -57,7 +57,6 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Espacio para equilibrar el diseño
                 Spacer(modifier = Modifier.size(40.dp))
             }
 
@@ -110,7 +109,7 @@ fun ProfileScreen(
 
                     }
                 }
-                else -> { /* Estado inicial, no hacer nada */ }
+                else -> { }
             }
 
             Spacer(modifier = Modifier.weight(1f))

@@ -65,7 +65,6 @@ fun LoginScreen(
                 onClick = { viewModel.onLoginClick() }
             )
 
-            // Texto para redirigir al registro
             Text(
                 text = "¿No tienes una cuenta? Regístrate aquí",
                 color = MaterialTheme.colorScheme.onBackground,

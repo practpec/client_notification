@@ -31,10 +31,8 @@ fun RegisterScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 
-    // Estado del snackbar
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Scaffold para la pantalla
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -47,7 +45,6 @@ fun RegisterScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Título de la pantalla
             Text(
                 text = "Registro",
                 style = MaterialTheme.typography.headlineLarge,

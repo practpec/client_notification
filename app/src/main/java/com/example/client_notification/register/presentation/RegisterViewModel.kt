@@ -19,7 +19,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-// Cambiamos a AndroidViewModel para tener acceso al contexto de la aplicación
 class RegisterViewModel(application: Application) : AndroidViewModel(application) {
     private val registerRepository = RegisterRepository()
     private val context = application.applicationContext
@@ -59,29 +58,23 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
     private val _phoneNumberError = MutableLiveData<String?>(null)
     val phoneNumberError: LiveData<String?> = _phoneNumberError
 
-    // Variable para almacenar el token FCM
     private var fcmToken: String? = null
 
-    // Función para obtener el token FCM de manera suspendida (para usar con corrutinas)
     private suspend fun getFCMToken(): String = suspendCancellableCoroutine { continuation ->
-        // Primero intentamos obtener el token desde nuestra clase de servicio
         FCMService.getToken()?.let {
             continuation.resume(it)
             return@suspendCancellableCoroutine
         }
 
-        // Si no está en memoria, intentamos recuperarlo de SharedPreferences
         val sharedPrefs = context.getSharedPreferences("FCMPrefs", Context.MODE_PRIVATE)
         val savedToken = sharedPrefs.getString("fcm_token", null)
 
         if (!savedToken.isNullOrEmpty()) {
-            // Si lo encontramos en SharedPreferences, lo guardamos en memoria y lo devolvemos
             FCMService.setToken(savedToken)
             continuation.resume(savedToken)
             return@suspendCancellableCoroutine
         }
 
-        // Si no lo encontramos en ningún lado, lo solicitamos a Firebase
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 // Si hay un error, lo propagamos
@@ -91,19 +84,15 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
                 return@OnCompleteListener
             }
 
-            // Obtenemos el token
             val token = task.result ?: ""
 
-            // Lo guardamos en SharedPreferences
             with(sharedPrefs.edit()) {
                 putString("fcm_token", token)
                 apply()
             }
 
-            // Lo guardamos en memoria
             FCMService.setToken(token)
 
-            // Lo devolvemos
             continuation.resume(token)
         })
     }
@@ -166,7 +155,6 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
                 val password = _password.value ?: ""
                 val phoneNumber = _phoneNumber.value ?:""
 
-                // Validaciones
                 val validationErrors = mutableListOf<String>()
 
                 if (name.isEmpty()) validationErrors.add("El email es requerido")
@@ -182,9 +170,7 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
                     return@launch
                 }
 
-                // Obtener el token FCM
                 try {
-                    // Obtenemos el token o lanzamos una excepción si hay error
                     fcmToken = getFCMToken()
                 } catch (e: Exception) {
                     _uiState.value = UiState.Error(
@@ -194,7 +180,6 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
                     return@launch
                 }
 
-                // Verificar que tenemos un token válido
                 if (fcmToken.isNullOrEmpty()) {
                     _uiState.value = UiState.Error(
                         message = "No se pudo obtener el token de notificaciones",
@@ -203,13 +188,12 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
                     return@launch
                 }
 
-                // Incluir el token FCM en la solicitud
                 val request = CreateUserRequest(
                     name = name,
                     email = email,
                     password = password,
                     phone = phoneNumber,
-                    fcm_token = fcmToken!! // Usamos !! porque ya verificamos que no es nulo
+                    fcm_token = fcmToken!!
                 )
 
                 when (val result = registerRepository.createUser(request)) {

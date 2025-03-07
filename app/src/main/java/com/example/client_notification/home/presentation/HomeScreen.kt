@@ -9,7 +9,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.client_notification.ui.shared.EmptyState // Asegúrate de importar el componente EmptyState
+import com.example.client_notification.ui.shared.EmptyState
 import com.example.client_notification.ui.shared.RecentOrderCard
 import com.example.client_notification.shared.data.models.OrdersDto
 import com.example.client_notification.ui.shared.CustomButton
@@ -97,7 +97,7 @@ fun HomeScreen(
                     }
                 }
             }
-            else -> { /* Estado inicial, no hacer nada */ }
+            else -> { }
         }
     }
 

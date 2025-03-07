@@ -49,10 +49,8 @@ fun OrderHistoryScreen(
             is OrderHistoryViewModel.UiState.Success -> {
                 val orders = (uiState as OrderHistoryViewModel.UiState.Success).orders
                 if (orders.isEmpty()) {
-                    // Si no hay órdenes, mostramos el estado vacío
                     EmptyState(message = "No se encontraron pedidos")
                 } else {
-                    // Si hay órdenes, mostramos la lista
                     LazyColumn(
                         modifier = Modifier.fillMaxSize()
                     ) {

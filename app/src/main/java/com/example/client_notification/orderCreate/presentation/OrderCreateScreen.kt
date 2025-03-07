@@ -88,7 +88,7 @@ fun OrderCreateScreen(
                 CreateButton(
                     modifier = Modifier,
                     text = "Ordenar",
-                    enabled = true,//uiState !is OrderCreateViewModel.UiState.Loading,
+                    enabled = true,
                     onClick = { viewModel.onCreateOrderClick() }
                 )
             }

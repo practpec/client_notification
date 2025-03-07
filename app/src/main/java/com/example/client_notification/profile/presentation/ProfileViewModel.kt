@@ -58,8 +58,7 @@ class ProfileViewModel(
     }
 
     fun logout() {
-        // Implementar lógica de cierre de sesión
-        // Por ejemplo, limpiar tokens, navegar a la pantalla de login, etc.
+
     }
 }
 
